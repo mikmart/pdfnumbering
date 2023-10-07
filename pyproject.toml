@@ -1,0 +1,10 @@
+[project]
+name = "pdfnumbering"
+version = "0.1.0"
+dependencies = [
+    "fpdf2",
+    "pypdf",
+]
+
+[project.scripts]
+pdfnumbering = "pdfnumbering.cli:main"

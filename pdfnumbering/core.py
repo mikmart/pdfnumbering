@@ -1,39 +1,60 @@
 import io
+import math
 from dataclasses import dataclass
+from typing import Container, Iterable
 
 import fpdf
 import pypdf
+from fpdf import Align
 
 from .color import hex2rgb
+
+Page = pypdf.PageObject
 
 
 @dataclass(slots=True, kw_only=True)
 class PdfNumberer:
-    font_family: str = "Helvetica"
-    font_size: int = 32
     color: str = "#ff0000"
-    position: tuple[int, int] = (10, 5)
+    font_size: int = 32
+    font_family: str = "Helvetica"
+    align: str | Align = Align.L
+    position: tuple[int, int] = (0, 0)
+    margin: tuple[int, int] = (28, 28)
+    start: int = 1
+    ignore: Container[int] = ()
+    skip: Container[int] = ()
 
-    @property
-    def _final_position(self) -> tuple[int, int]:
-        return self.position[0], self.position[1] + self.font_size
-
-    def stamp_page_numbers(self, document: pypdf.PdfReader | pypdf.PdfWriter) -> None:
+    def add_page_numbering(self, pages: Iterable[Page]) -> None:
         """
-        Add page number stamps to each page of a PDF document.
+        Stamp PDF pages with page numbers.
         """
-        for page in document.pages:
-            page.merge_page(self._create_stamp(page))
+        page_numbers = self._create_page_numbers(pages)
+        for page_number, page in zip(page_numbers, pages):
+            if page_number is not None:
+                page.merge_page(self._create_stamp(page, str(page_number)))
 
-    def _create_stamp(self, page: pypdf.PageObject) -> pypdf.PageObject:
-        def to_fpdf_format(page: pypdf.PageObject) -> tuple[float, float]:
-            return page.mediabox.width, page.mediabox.height
+    def _create_page_numbers(self, pages: Iterable[Page]) -> Iterable[int | None]:
+        page_number = self.start
+        for page in pages:
+            if page.page_number in self.ignore:
+                yield None
+            elif page.page_number in self.skip:
+                yield None
+                page_number += 1
+            else:
+                yield page_number
+                page_number += 1
 
+    def _create_stamp(self, page: Page, text: str) -> Page:
         pdf = fpdf.FPDF(unit="pt")
-        pdf.add_page(format=to_fpdf_format(page))
+        pdf.set_auto_page_break(False)  # Allow small negative y-positions
         pdf.set_font(self.font_family, size=self.font_size)
         pdf.set_text_color(*hex2rgb(self.color))
-        pdf.text(*self._final_position, str(page.page_number + 1))
+
+        pdf.add_page(format=(page.mediabox.width, page.mediabox.height))
+        pdf.set_y(math.copysign(self.margin[1], self.position[1]) + self.position[1])
+        pdf.set_x(math.copysign(self.margin[0], self.position[0]) + self.position[0])
+        pdf.cell(0, 0, text, align=self.align)
 
         def to_pypdf(pdf: fpdf.FPDF) -> pypdf.PdfReader:
             return pypdf.PdfReader(io.BytesIO(pdf.output()))
