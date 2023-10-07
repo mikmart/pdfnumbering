@@ -6,10 +6,9 @@ from typing import Container, Iterable
 import fpdf
 import pypdf
 from fpdf import Align
+from pypdf import PageObject as Page
 
 from .color import hex2rgb
-
-Page = pypdf.PageObject
 
 
 @dataclass(slots=True, kw_only=True)
