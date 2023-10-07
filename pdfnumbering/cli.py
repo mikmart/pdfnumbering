@@ -9,23 +9,37 @@ from pdfnumbering.core import PdfNumberer
 
 def create_parser():
     parser = argparse.ArgumentParser(
-        description="Stamp pages in a PDF with page numbers.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="Stamp pages in a PDF document with page numbers.",
+        allow_abbrev=False,
     )
+
+    DEFAULT = " (default: %(default)s)"
 
     version_string = "%(prog)s {}".format(importlib.metadata.version("pdfnumbering"))
     parser.add_argument("-v", "--version", action="version", version=version_string)
 
     styling = parser.add_argument_group("styling options")
-    styling.add_argument("--color", default="#ff0000")
-    styling.add_argument("--font-size", default=32, type=int)
-    styling.add_argument("--font-family", default="Helvetica")
+    styling.add_argument("--color", default="#ff0000", help="hex color code" + DEFAULT)
+    styling.add_argument(
+        "--font-size",
+        metavar="PT",
+        default=32,
+        type=int,
+        help="font size in points" + DEFAULT,
+    )
+    styling.add_argument(
+        "--font-family",
+        metavar="NAME",
+        default="Helvetica",
+        help="font family name" + DEFAULT,
+    )
 
     placement = parser.add_argument_group("placement options")
     placement.add_argument(
         "--align",
         default="left",
         choices=("left", "center", "right"),
+        help="horizontal alignment of page numbers" + DEFAULT,
     )
     placement.add_argument(
         "--position",
@@ -33,35 +47,37 @@ def create_parser():
         nargs=2,
         default=(0, 0),
         type=int,
+        help="position of page numbers, in points (default: 0 0)",
     )
     placement.add_argument(
         "--margin",
         metavar=("X", "Y"),
         nargs=2,
         type=int,
+        help="margin at the page edges, in points (default: adapts to font size)",
     )
 
     numbering = parser.add_argument_group("numbering options")
     numbering.add_argument(
-        "--start", default=1, type=int, help="number to start stamping with"
+        "--start", default=1, type=int, help="number to start stamping with" + DEFAULT
     )
     numbering.add_argument(
         "--skip",
         metavar="PAGE",
         nargs="*",
         type=int,
-        help="pages that should not be stamped",
+        help="pages that should not be stamped" + DEFAULT,
     )
     numbering.add_argument(
         "--ignore",
         metavar="PAGE",
         nargs="*",
         type=int,
-        help="pages that should not be counted",
+        help="pages that should not be counted" + DEFAULT,
     )
 
-    parser.add_argument("file", help="the input PDF file to stamp")
-    parser.add_argument("-o", "--output", help="destination for output PDF")
+    parser.add_argument("file", metavar="FILE", help="the input PDF file to stamp")
+    parser.add_argument("-o", "--output", help="destination to write output PDF to")
 
     return parser
 
