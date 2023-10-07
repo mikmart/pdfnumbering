@@ -8,12 +8,10 @@ import pypdf
 from fpdf import Align
 from pypdf import PageObject as Page
 
-from .color import hex2rgb
-
 
 @dataclass(slots=True, kw_only=True)
 class PdfNumberer:
-    color: str = "#ff0000"
+    color: tuple[int, int, int] = (255, 0, 0)
     font_size: int = 32
     font_family: str = "Helvetica"
     align: str | Align = Align.L
@@ -36,25 +34,36 @@ class PdfNumberer:
         page_number = self.start
         for page in pages:
             if page.page_number in self.ignore:
+                # Don't count and don't show
                 yield None
             elif page.page_number in self.skip:
+                # Count but don't show
                 yield None
                 page_number += 1
             else:
+                # Count and show
                 yield page_number
                 page_number += 1
 
     def _create_stamp(self, page: Page, text: str) -> Page:
         pdf = fpdf.FPDF(unit="pt")
-        pdf.set_auto_page_break(False)  # Allow small negative y-positions
-        pdf.set_font(self.font_family, size=self.font_size)
-        pdf.set_text_color(*hex2rgb(self.color))
 
+        # Create fpdf page matching pypdf page dimensions
         pdf.add_page(format=(page.mediabox.width, page.mediabox.height))
+
+        # Position cursor on page
+        pdf.set_auto_page_break(False)  # Allow small negative y-positions
         pdf.set_y(math.copysign(self.margin[1], self.position[1]) + self.position[1])
         pdf.set_x(math.copysign(self.margin[0], self.position[0]) + self.position[0])
+
+        # Set font styling
+        pdf.set_font(self.font_family, size=self.font_size)
+        pdf.set_text_color(*self.color)
+
+        # Write stamp text
         pdf.cell(0, 0, text, align=self.align)
 
+        # Return as a pypdf page
         def to_pypdf(pdf: fpdf.FPDF) -> pypdf.PdfReader:
             return pypdf.PdfReader(io.BytesIO(pdf.output()))
 

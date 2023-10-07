@@ -4,6 +4,7 @@ import sys
 
 import pypdf
 
+from pdfnumbering.color import hex2rgb
 from pdfnumbering.core import PdfNumberer
 
 
@@ -99,7 +100,7 @@ def main():
         args.margin = (28, 28 + args.font_size // 2)
 
     numberer = PdfNumberer(
-        color=args.color,
+        color=hex2rgb(args.color),
         font_size=args.font_size,
         font_family=args.font_family,
         align=args.align[0].upper(),
