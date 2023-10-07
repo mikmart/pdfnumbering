@@ -68,15 +68,17 @@ def create_parser():
         "--skip",
         metavar="PAGE",
         nargs="*",
+        default=(),
         type=int,
-        help="pages that should not be stamped (default: %(default)s)",
+        help="pages that should not be stamped",
     )
     numbering.add_argument(
         "--ignore",
         metavar="PAGE",
         nargs="*",
+        default=(),
         type=int,
-        help="pages that should not be counted (default: %(default)s)",
+        help="pages that should not be counted",
     )
 
     parser.add_argument("-o", "--output", help="destination to write output PDF to")
@@ -89,6 +91,7 @@ def main():
     parser = create_parser()
     args = parser.parse_args()
 
+    # Refuse to write binary data to terminal
     if not args.output and sys.stdout.isatty():
         parser.error("`--output` must be specified or stdout redirected.")
 
@@ -97,14 +100,14 @@ def main():
 
     numberer = PdfNumberer(
         color=args.color,
-        font_family=args.font_family,
         font_size=args.font_size,
+        font_family=args.font_family,
         align=args.align[0].upper(),
-        position=tuple(args.position),  # type: ignore
-        margin=tuple(args.margin),  # type: ignore
+        position=args.position,
+        margin=args.margin,
         start=args.start,
-        skip=[page - 1 for page in args.skip or ()],
-        ignore=[page - 1 for page in args.ignore or ()],
+        skip=[page - 1 for page in args.skip],
+        ignore=[page - 1 for page in args.ignore],
     )
 
     document = pypdf.PdfWriter(clone_from=args.file)
