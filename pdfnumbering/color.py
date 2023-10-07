@@ -1,12 +1,12 @@
-def hex2rgb(hex: str) -> tuple[int, int, int]:
+def hex2rgb(code: str) -> tuple[int, int, int]:
     """
     Convert hex color code string to RGB tuple.
     """
-    hex = hex.lstrip("#")
+    code = code.lstrip("#")
     try:
-        r = int(hex[0:2], base=16)
-        g = int(hex[2:4], base=16)
-        b = int(hex[4:6], base=16)
+        r = int(code[0:2], base=16)
+        g = int(code[2:4], base=16)
+        b = int(code[4:6], base=16)
     except ValueError:
-        raise ValueError(f"Invalid hex color code: #{hex}")
+        raise ValueError(f"Invalid hex color code: #{code}") from None
     return r, g, b

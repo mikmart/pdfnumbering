@@ -21,12 +21,12 @@ class PdfNumberer:
     position: tuple[int, int] = (0, 0)
     margin: tuple[int, int] = (28, 28)
     start: int = 1
-    ignore: Container[int] = ()
     skip: Container[int] = ()
+    ignore: Container[int] = ()
 
     def add_page_numbering(self, pages: Iterable[Page]) -> None:
         """
-        Stamp PDF pages with page numbers.
+        Stamp a set of PDF pages with page numbers.
         """
         page_numbers = self._create_page_numbers(pages)
         for page_number, page in zip(page_numbers, pages):
