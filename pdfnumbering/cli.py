@@ -17,9 +17,15 @@ def create_parser():
     version_string = "%(prog)s {}".format(importlib.metadata.version("pdfnumbering"))
     parser.add_argument("-v", "--version", action="version", version=version_string)
 
+    def hexcolor(string):
+        return hex2rgb(string)
+
     styling = parser.add_argument_group("styling options")
     styling.add_argument(
-        "--color", default="#ff0000", help="hex color code (default: %(default)s)"
+        "--color",
+        default="#ff0000",
+        type=hexcolor,
+        help="hex color code (default: %(default)s)",
     )
     styling.add_argument(
         "--font-size",
@@ -82,8 +88,18 @@ def create_parser():
         help="pages that should not be counted",
     )
 
-    parser.add_argument("-o", "--output", help="destination to write output PDF to")
-    parser.add_argument("file", metavar="FILE", help="the input PDF file to stamp")
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=argparse.FileType("wb"),
+        help="destination to write output PDF to",
+    )
+    parser.add_argument(
+        "file",
+        metavar="FILE",
+        type=argparse.FileType("rb"),
+        help="the input PDF file to stamp",
+    )
 
     return parser
 
@@ -100,7 +116,7 @@ def main():
         args.margin = (28, 28 + args.font_size // 2)
 
     numberer = PdfNumberer(
-        color=hex2rgb(args.color),
+        color=args.color,
         font_size=args.font_size,
         font_family=args.font_family,
         align=args.align[0].upper(),
