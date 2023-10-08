@@ -1,4 +1,4 @@
-# A package and CLI to add page numbers to a PDF document 
+# Adding page numbers to a PDF document
 
 ## Installation
 
