@@ -1,12 +1,17 @@
 import io
 import math
 from dataclasses import dataclass
-from typing import Container, Iterable
+from typing import Container, Iterable, Protocol
 
 import fpdf
 import pypdf
 from fpdf import Align
 from pypdf import PageObject as Page
+
+
+class Formatter(Protocol):
+    def format(self, page_number: int, page_count: int, /) -> str:
+        ...
 
 
 @dataclass(slots=True, kw_only=True)
@@ -20,15 +25,18 @@ class PdfNumberer:
     start: int = 1
     skip: Container[int] = ()
     ignore: Container[int] = ()
+    formatter: Formatter = "{}"
 
     def add_page_numbering(self, pages: Iterable[Page]) -> None:
         """
         Stamp a set of PDF pages with page numbers.
         """
-        page_numbers = self._create_page_numbers(pages)
+        page_numbers = list(self._create_page_numbers(pages))
+        page_count = max(page for page in page_numbers if page is not None)
         for page_number, page in zip(page_numbers, pages):
             if page_number is not None:
-                page.merge_page(self._create_stamp(page, str(page_number)))
+                text = self.formatter.format(page_number, page_count)
+                page.merge_page(self._create_stamp(page, text))
 
     def _create_page_numbers(self, pages: Iterable[Page]) -> Iterable[int | None]:
         page_number = self.start

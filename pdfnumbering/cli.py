@@ -63,10 +63,13 @@ def create_parser():
 
     numbering = parser.add_argument_group("numbering options")
     numbering.add_argument(
+        "--format", default="{}", help="format string for page numbers"
+    )
+    numbering.add_argument(
         "--start",
         default=1,
         type=int,
-        help="number to start stamping with (default: %(default)s)",
+        help="first page number to assign (default: %(default)s)",
     )
     numbering.add_argument(
         "--skip",
@@ -145,6 +148,7 @@ def main():
         start=args.start,
         skip=args.skip,
         ignore=args.ignore,
+        formatter=args.format,
     )
 
     document = pypdf.PdfWriter(clone_from=args.file)
