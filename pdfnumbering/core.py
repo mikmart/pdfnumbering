@@ -24,7 +24,7 @@ class PdfNumberer:
 
     def add_page_numbering(self, pages: Iterable[Page]) -> None:
         """
-        Stamp a set of PDF pages with page numbers.
+        Stamp a collection of PDF pages with page numbers.
         """
         page_numbers, page_count = self._create_numbering(pages)
         for page_number, page in zip(page_numbers, pages):
@@ -47,29 +47,33 @@ class PdfNumberer:
                 page_numbers.append(None)
                 current_number += 1
             else:
-                # Count and show
+                # Count and number
                 page_numbers.append(current_number)
                 current_number += 1
         return page_numbers, current_number
 
     def _create_stamp(self, page: Page, text: str) -> Page:
-        # Create fpdf page matching pypdf page dimensions
+        """
+        Create a page for stamping text.
+        """
+        # Create an empty fpdf page matching the pypdf page dimensions
         pdf = fpdf.FPDF(unit="pt")
         pdf.add_page(format=(page.mediabox.width, page.mediabox.height))
 
-        # Position cursor on page
+        # Position text cursor on page
         pdf.set_auto_page_break(False)  # Allow small negative y-positions
         pdf.set_y(math.copysign(self.margin[1], self.position[1]) + self.position[1])
         pdf.set_x(math.copysign(self.margin[0], self.position[0]) + self.position[0])
 
         # Set font styling
-        pdf.set_font(self.font_family, size=self.font_size)
+        pdf.set_font(self.font_family)
+        pdf.set_font_size(self.font_size)
         pdf.set_text_color(*self.color)
 
         # Write stamp text
         pdf.cell(0, 0, text, align=self.align)
 
-        # Return as a pypdf page
+        # Convert to a pypdf page and return
         def to_pypdf(pdf: fpdf.FPDF) -> pypdf.PdfReader:
             return pypdf.PdfReader(io.BytesIO(pdf.output()))
 

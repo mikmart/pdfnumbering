@@ -1,6 +1,6 @@
 def hex2rgb(code: str) -> tuple[int, int, int]:
     """
-    Convert hex color code string to RGB tuple.
+    Parse a hexadecimal color code string into an RGB tuple.
     """
     code = code.lstrip("#")
     try:

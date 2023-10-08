@@ -20,6 +20,35 @@ def create_parser():
     version_string = "%(prog)s {}".format(importlib.metadata.version("pdfnumbering"))
     parser.add_argument("-v", "--version", action="version", version=version_string)
 
+    numbering = parser.add_argument_group("numbering options")
+    numbering.add_argument(
+        "--start",
+        default=1,
+        type=int,
+        help="first number to stamp with (default: %(default)s)",
+    )
+    numbering.add_argument(
+        "--ignore",
+        metavar="PAGE",
+        nargs="*",
+        default=(),
+        type=int,
+        help="pages that should not be counted",
+    )
+    numbering.add_argument(
+        "--skip",
+        metavar="PAGE",
+        nargs="*",
+        default=(),
+        type=int,
+        help="pages that should not be stamped",
+    )
+    numbering.add_argument(
+        "--format",
+        default="{}",
+        help='format string for stamp text, formatted with page number and page count (default: "{}")',
+    )
+
     styling = parser.add_argument_group("styling options")
     styling.add_argument(
         "--color", default="#ff0000", help="hex color code (default: %(default)s)"
@@ -61,38 +90,11 @@ def create_parser():
         help="margin at the page edges, in points (default: adapts to font size)",
     )
 
-    numbering = parser.add_argument_group("numbering options")
-    numbering.add_argument(
-        "--format", default="{}", help="format string for page numbers"
-    )
-    numbering.add_argument(
-        "--start",
-        default=1,
-        type=int,
-        help="first page number to assign (default: %(default)s)",
-    )
-    numbering.add_argument(
-        "--skip",
-        metavar="PAGE",
-        nargs="*",
-        default=(),
-        type=int,
-        help="pages that should not be stamped",
-    )
-    numbering.add_argument(
-        "--ignore",
-        metavar="PAGE",
-        nargs="*",
-        default=(),
-        type=int,
-        help="pages that should not be counted",
-    )
-
     parser.add_argument(
         "-o",
         "--output",
         type=argparse.FileType("wb"),
-        help="destination to write output PDF to",
+        help="destination to write output to",
     )
     parser.add_argument(
         "file",
@@ -124,13 +126,13 @@ def parse_and_process_args():
     # Convert align string choice to enum value
     args.align = Align.coerce(args.align[0].upper())
 
-    # Adapt margins to font size by default
+    # Adapt vertical margins to font size by default
     if args.margin is None:
         args.margin = (28, 28 + args.font_size // 2)
 
     # Convert pages from 1-based to 0-based indexing
-    args.skip = [page - 1 for page in args.skip]
     args.ignore = [page - 1 for page in args.ignore]
+    args.skip = [page - 1 for page in args.skip]
 
     return args
 
