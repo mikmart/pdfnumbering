@@ -29,10 +29,10 @@ document.write(OUTPUT_FILE)
 
 ```
 $ pdfnumbering --help
-usage: pdfnumbering [-h] [-v] [--start START] [--ignore [PAGE ...]] [--skip [PAGE ...]]
-                    [--format FORMAT] [--color COLOR] [--font-size PT]
-                    [--font-family NAME] [--align {left,center,right}] [--position X Y]
-                    [--margin X Y] [-o OUTPUT]
+usage: pdfnumbering [-h] [-v] [--first-number N] [--ignore-pages [PAGE ...]]
+                    [--skip-pages [PAGE ...]] [--stamp-format STRING] [--font-size PT]
+                    [--font-family NAME] [--text-color HEX] [--text-align {left,center,right}]
+                    [--text-position X Y] [--page-margin X Y] [-o OUTPUT]
                     FILE
 
 Stamp pages in a PDF document with page numbers.
@@ -47,20 +47,23 @@ options:
                         destination to write output to
 
 numbering options:
-  --start START         first number to stamp with (default: 1)
-  --ignore [PAGE ...]   pages that should not be counted
-  --skip [PAGE ...]     pages that should not be stamped
-  --format FORMAT       format string for stamp text, formatted with page number and page
+  --first-number N      number to start counting from (default: 1)
+  --ignore-pages [PAGE ...]
+                        pages that should not be counted
+  --skip-pages [PAGE ...]
+                        pages that should not be stamped
+  --stamp-format STRING
+                        format string for stamp text, formatted with page number and page
                         count (default: "{}")
 
 styling options:
-  --color COLOR         hex color code (default: #ff0000)
   --font-size PT        font size in points (default: 32)
   --font-family NAME    font family name (default: Helvetica)
+  --text-color HEX      hexadecimal color code (default: #ff0000)
 
 placement options:
-  --align {left,center,right}
+  --text-align {left,center,right}
                         horizontal alignment of page numbers (default: left)
-  --position X Y        position of page numbers, in points (default: 0 0)
-  --margin X Y          margin at the page edges, in points (default: adapts to font size)
+  --text-position X Y   position of page numbers, in points (default: 0 0)
+  --page-margin X Y     margin at the page edges, in points (default: adapts to font size)
 ```

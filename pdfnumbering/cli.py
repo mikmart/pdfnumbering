@@ -22,13 +22,14 @@ def create_parser():
 
     numbering = parser.add_argument_group("numbering options")
     numbering.add_argument(
-        "--start",
+        "--first-number",
+        metavar="N",
         default=1,
         type=int,
-        help="first number to stamp with (default: %(default)s)",
+        help="number to start counting from (default: %(default)s)",
     )
     numbering.add_argument(
-        "--ignore",
+        "--ignore-pages",
         metavar="PAGE",
         nargs="*",
         default=(),
@@ -36,7 +37,7 @@ def create_parser():
         help="pages that should not be counted",
     )
     numbering.add_argument(
-        "--skip",
+        "--skip-pages",
         metavar="PAGE",
         nargs="*",
         default=(),
@@ -44,15 +45,13 @@ def create_parser():
         help="pages that should not be stamped",
     )
     numbering.add_argument(
-        "--format",
+        "--stamp-format",
+        metavar="STRING",
         default="{}",
         help='format string for stamp text, formatted with page number and page count (default: "{}")',
     )
 
     styling = parser.add_argument_group("styling options")
-    styling.add_argument(
-        "--color", default="#ff0000", help="hex color code (default: %(default)s)"
-    )
     styling.add_argument(
         "--font-size",
         metavar="PT",
@@ -66,16 +65,22 @@ def create_parser():
         default="Helvetica",
         help="font family name (default: %(default)s)",
     )
+    styling.add_argument(
+        "--text-color",
+        metavar="HEX",
+        default="#ff0000",
+        help="hexadecimal color code (default: %(default)s)",
+    )
 
     placement = parser.add_argument_group("placement options")
     placement.add_argument(
-        "--align",
+        "--text-align",
         default="left",
         choices=("left", "center", "right"),
         help="horizontal alignment of page numbers (default: %(default)s)",
     )
     placement.add_argument(
-        "--position",
+        "--text-position",
         metavar=("X", "Y"),
         nargs=2,
         default=(0, 0),
@@ -83,7 +88,7 @@ def create_parser():
         help="position of page numbers, in points (default: 0 0)",
     )
     placement.add_argument(
-        "--margin",
+        "--page-margin",
         metavar=("X", "Y"),
         nargs=2,
         type=int,
@@ -119,20 +124,20 @@ def parse_and_process_args():
 
     # Parse hex color code to RGB tuple
     try:
-        args.color = hex2rgb(args.color)
+        args.text_color = hex2rgb(args.text_color)
     except ValueError as error:
         parser.error(f"argument --color: {error}")
 
     # Convert align string choice to enum value
-    args.align = Align.coerce(args.align[0].upper())
+    args.text_align = Align.coerce(args.text_align[0].upper())
 
     # Adapt vertical margins to font size by default
-    if args.margin is None:
-        args.margin = (28, 28 + args.font_size // 2)
+    if args.page_margin is None:
+        args.page_margin = (28, 28 + args.font_size // 2)
 
     # Convert pages from 1-based to 0-based indexing
-    args.ignore = [page - 1 for page in args.ignore]
-    args.skip = [page - 1 for page in args.skip]
+    args.ignore_pages = [page - 1 for page in args.ignore_pages]
+    args.skip_pages = [page - 1 for page in args.skip_pages]
 
     return args
 
@@ -141,16 +146,16 @@ def main():
     args = parse_and_process_args()
 
     numberer = PdfNumberer(
-        start=args.start,
-        ignore=args.ignore,
-        skip=args.skip,
-        format=args.format,
-        color=args.color,
+        first_number=args.first_number,
+        ignore_pages=args.ignore_pages,
+        skip_pages=args.skip_pages,
+        stamp_format=args.stamp_format,
         font_size=args.font_size,
         font_family=args.font_family,
-        align=args.align,
-        position=args.position,
-        margin=args.margin,
+        text_color=args.text_color,
+        text_align=args.text_align,
+        text_position=args.text_position,
+        page_margin=args.page_margin,
     )
 
     document = pypdf.PdfWriter(clone_from=args.file)
