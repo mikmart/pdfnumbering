@@ -1,7 +1,7 @@
 import io
 import math
 from dataclasses import dataclass
-from typing import Container, Iterable, Protocol
+from typing import Container, Iterable
 
 import fpdf
 import pypdf
@@ -9,23 +9,18 @@ from fpdf import Align
 from pypdf import PageObject as Page
 
 
-class Formatter(Protocol):
-    def format(self, page_number: int, page_count: int, /) -> str:
-        ...
-
-
 @dataclass(slots=True, kw_only=True)
 class PdfNumberer:
+    start: int = 1
+    ignore: Container[int] = ()
+    skip: Container[int] = ()
+    format: str = "{}"
     color: tuple[int, int, int] = (255, 0, 0)
     font_size: int = 32
     font_family: str = "Helvetica"
     align: str | Align = Align.L
     position: tuple[int, int] = (0, 0)
     margin: tuple[int, int] = (28, 28)
-    start: int = 1
-    skip: Container[int] = ()
-    ignore: Container[int] = ()
-    formatter: Formatter = "{}"
 
     def add_page_numbering(self, pages: Iterable[Page]) -> None:
         """
@@ -34,18 +29,21 @@ class PdfNumberer:
         page_numbers, page_count = self._create_numbering(pages)
         for page_number, page in zip(page_numbers, pages):
             if page_number is not None:
-                text = self.formatter.format(page_number, page_count)
+                text = self.format.format(page_number, page_count)
                 page.merge_page(self._create_stamp(page, text))
 
     def _create_numbering(self, pages: Iterable[Page]) -> tuple[list[int | None], int]:
+        """
+        Create page numbers and total page count.
+        """
         page_numbers = []
         current_number = self.start
         for page in pages:
             if page.page_number in self.ignore:
-                # Don't count and don't show
+                # Don't count and don't number
                 page_numbers.append(None)
             elif page.page_number in self.skip:
-                # Count but don't show
+                # Count but don't number
                 page_numbers.append(None)
                 current_number += 1
             else:

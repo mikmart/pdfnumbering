@@ -139,16 +139,16 @@ def main():
     args = parse_and_process_args()
 
     numberer = PdfNumberer(
+        start=args.start,
+        ignore=args.ignore,
+        skip=args.skip,
+        format=args.format,
         color=args.color,
         font_size=args.font_size,
         font_family=args.font_family,
         align=args.align,
         position=args.position,
         margin=args.margin,
-        start=args.start,
-        skip=args.skip,
-        ignore=args.ignore,
-        formatter=args.format,
     )
 
     document = pypdf.PdfWriter(clone_from=args.file)
