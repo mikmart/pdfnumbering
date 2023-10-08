@@ -26,31 +26,32 @@ class PdfNumberer:
         """
         Stamp a collection of PDF pages with page numbers.
         """
-        page_numbers, page_count = self._create_numbering(pages)
+        page_numbers = (page.page_number for page in pages)
+        page_numbers, page_count = self._renumber(page_numbers)
         for page_number, page in zip(page_numbers, pages):
             if page_number is not None:
                 text = self.stamp_format.format(page_number, page_count)
                 page.merge_page(self._create_stamp(page, text))
 
-    def _create_numbering(self, pages: Iterable[Page]) -> tuple[list[int | None], int]:
+    def _renumber(self, page_numbers: Iterable[int]) -> tuple[list[int | None], int]:
         """
         Create page numbers and total page count.
         """
-        page_numbers = []
-        current_number = self.first_number
-        for page in pages:
-            if page.page_number in self.ignore_pages:
+        new_numbers = []
+        next_number = self.first_number
+        for page_number in page_numbers:
+            if page_number in self.ignore_pages:
                 # Don't count and don't number
-                page_numbers.append(None)
-            elif page.page_number in self.skip_pages:
+                new_numbers.append(None)
+            elif page_number in self.skip_pages:
                 # Count but don't number
-                page_numbers.append(None)
-                current_number += 1
+                new_numbers.append(None)
+                next_number += 1
             else:
                 # Count and number
-                page_numbers.append(current_number)
-                current_number += 1
-        return page_numbers, current_number
+                new_numbers.append(next_number)
+                next_number += 1
+        return new_numbers, next_number - 1
 
     def _create_stamp(self, page: Page, text: str) -> Page:
         """
