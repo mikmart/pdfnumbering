@@ -1,7 +1,7 @@
 # Add page numbers to a PDF document
 
-pdfnumbering builds on [pypdf](https://pypdf.readthedocs.io/en/latest/) and
-[fpdf2](https://py-pdf.github.io/fpdf2/) to make it easy to stamp page numbers
+pdfnumbering builds on [pypdf](https://github.com/py-pdf/pypdf) and
+[fpdf2](https://github.com/py-pdf/fpdf2) to make it easy to stamp page numbers
 to a PDF document, and provides a convenient CLI tool to do so.
 
 ## Installation
