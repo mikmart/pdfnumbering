@@ -46,9 +46,8 @@ class PdfNumberer:
                 page_number += 1
 
     def _create_stamp(self, page: Page, text: str) -> Page:
-        pdf = fpdf.FPDF(unit="pt")
-
         # Create fpdf page matching pypdf page dimensions
+        pdf = fpdf.FPDF(unit="pt")
         pdf.add_page(format=(page.mediabox.width, page.mediabox.height))
 
         # Position cursor on page

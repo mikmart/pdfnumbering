@@ -8,5 +8,5 @@ def hex2rgb(code: str) -> tuple[int, int, int]:
         g = int(code[2:4], base=16)
         b = int(code[4:6], base=16)
     except ValueError:
-        raise ValueError(f"Invalid hex color code: #{code}") from None
+        raise ValueError(f"invalid hexadecimal color code: '#{code}'") from None
     return r, g, b
