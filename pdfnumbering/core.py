@@ -31,27 +31,28 @@ class PdfNumberer:
         """
         Stamp a set of PDF pages with page numbers.
         """
-        page_numbers = list(self._create_page_numbers(pages))
-        page_count = max(page for page in page_numbers if page is not None)
+        page_numbers, page_count = self._create_numbering(pages)
         for page_number, page in zip(page_numbers, pages):
             if page_number is not None:
                 text = self.formatter.format(page_number, page_count)
                 page.merge_page(self._create_stamp(page, text))
 
-    def _create_page_numbers(self, pages: Iterable[Page]) -> Iterable[int | None]:
-        page_number = self.start
+    def _create_numbering(self, pages: Iterable[Page]) -> tuple[list[int | None], int]:
+        page_numbers = []
+        current_number = self.start
         for page in pages:
             if page.page_number in self.ignore:
                 # Don't count and don't show
-                yield None
+                page_numbers.append(None)
             elif page.page_number in self.skip:
                 # Count but don't show
-                yield None
-                page_number += 1
+                page_numbers.append(None)
+                current_number += 1
             else:
                 # Count and show
-                yield page_number
-                page_number += 1
+                page_numbers.append(current_number)
+                current_number += 1
+        return page_numbers, current_number
 
     def _create_stamp(self, page: Page, text: str) -> Page:
         # Create fpdf page matching pypdf page dimensions
