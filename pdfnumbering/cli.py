@@ -126,7 +126,7 @@ def parse_and_process_args():
     try:
         args.text_color = hex2rgb(args.text_color)
     except ValueError as error:
-        parser.error(f"argument --color: {error}")
+        parser.error(f"argument --text-color: {error}")
 
     # Convert align string choice to enum value
     args.text_align = Align.coerce(args.text_align[0].upper())
