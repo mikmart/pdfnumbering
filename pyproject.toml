@@ -1,11 +1,25 @@
 [project]
 name = "pdfnumbering"
+description = "A package and CLI for adding page numbering to PDFs"
+readme = "README.md"
 requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+authors = [
+    { name = "Mikko Marttila", email = "mikkmart@protonmail.com" },
+]
 dependencies = [
     "fpdf2",
     "pypdf",
 ]
 dynamic = ["version"]
+
+[project.urls]
+"Source" = "https://github.com/mikmart/pdfnumbering"
+"Bug Reports" = "https://github.com/mikmart/pdfnumbering/issues"
 
 [project.scripts]
 pdfnumbering = "pdfnumbering.cli:main"
