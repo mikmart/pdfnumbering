@@ -1,5 +1,6 @@
 [project]
 name = "pdfnumbering"
+requires-python = ">=3.10"
 dependencies = [
     "fpdf2",
     "pypdf",
