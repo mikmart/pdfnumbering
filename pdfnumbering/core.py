@@ -66,15 +66,18 @@ class PdfNumberer:
         pdf.set_font_size(self.font_size)
         pdf.set_text_color(*self.text_color)
 
-        # Position text cursor on page
-        def add_margin(position, margin):
+        # Adjust page margins for cell sizing
+        pdf.set_margins(*self.page_margin)
+        pdf.set_auto_page_break(False)  # Allow stamping in bottom margin
+
+        # Position text cursor relative to margins
+        def with_margin(position, margin):
             return position + math.copysign(margin, position)
 
-        pdf.set_auto_page_break(False)  # Allow small negative y-positions
-        pdf.set_y(add_margin(self.text_position[1], self.page_margin[1]))
-        pdf.set_x(add_margin(self.text_position[0], self.page_margin[0]))
+        pdf.set_y(with_margin(self.text_position[1], self.page_margin[1]))
+        pdf.set_x(with_margin(self.text_position[0], self.page_margin[0]))
 
-        # Write stamp text
+        # Write stamp text, vertically centered
         pdf.cell(0, 0, text, align=self.text_align)
 
         # Convert to a pypdf page and return
