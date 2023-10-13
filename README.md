@@ -6,6 +6,14 @@ to a PDF document, and provides a convenient CLI tool to do so.
 
 ## Installation
 
+Install the published version from [PyPI](https://pypi.org/project/pdfnumbering/):
+
+```sh
+python -m pip install pdfnumbering
+```
+
+Or the development version from [GitHub](https://github.com/mikmart/pdfnumbering):
+
 ```sh
 python -m pip install git+https://github.com/mikmart/pdfnumbering.git
 ```
