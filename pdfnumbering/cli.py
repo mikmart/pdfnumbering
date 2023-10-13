@@ -1,9 +1,9 @@
 import argparse
-import importlib.metadata
 import sys
 
 import pypdf
 
+from pdfnumbering import __version__
 from pdfnumbering.color import hex2rgb
 from pdfnumbering.core import Align, PdfNumberer
 
@@ -17,8 +17,9 @@ def create_parser():
         allow_abbrev=False,
     )
 
-    version_string = "%(prog)s {}".format(importlib.metadata.version("pdfnumbering"))
-    parser.add_argument("-v", "--version", action="version", version=version_string)
+    parser.add_argument(
+        "-v", "--version", action="version", version=f"%(prog)s {__version__}"
+    )
 
     numbering = parser.add_argument_group("numbering options")
     numbering.add_argument(
