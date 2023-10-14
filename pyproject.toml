@@ -13,8 +13,8 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "fpdf2",
-    "pypdf",
+    "fpdf2>=2.0",
+    "pypdf>=3.0",
 ]
 
 [project.urls]
