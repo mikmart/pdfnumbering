@@ -1,11 +1,14 @@
+"""
+Command line interface to the package.
+"""
 import argparse
 import sys
 
 import pypdf
 
-from pdfnumbering import __version__
-from pdfnumbering.color import hex2rgb
-from pdfnumbering.core import Align, PdfNumberer
+from . import __version__
+from .color import hex2rgb
+from .core import Align, PdfNumberer
 
 
 def create_parser():
@@ -144,6 +147,9 @@ def parse_and_process_args():
 
 
 def main():
+    """
+    Command line entrypoint.
+    """
     args = parse_and_process_args()
 
     numberer = PdfNumberer(
