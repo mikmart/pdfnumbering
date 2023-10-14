@@ -115,22 +115,19 @@ def create_parser():
     return parser
 
 
-def parse_and_process_args():
+def process_args(args) -> tuple[argparse.Namespace, str | None]:
     """
-    Parse CLI arguments and post-process to library args.
+    Post-process parsed CLI arguments.
     """
-    parser = create_parser()
-    args = parser.parse_args()
-
     # Refuse to write binary data to terminal
     if not args.output and sys.stdout.isatty():
-        parser.error("--output must be specified or stdout redirected.")
+        return args, "--output must be specified or stdout redirected."
 
     # Parse hex color code to RGB tuple
     try:
         args.text_color = hex2rgb(args.text_color)
     except ValueError as error:
-        parser.error(f"argument --text-color: {error}")
+        return args, f"argument --text-color: {error}"
 
     # Convert align string choice to enum value
     args.text_align = Align.coerce(args.text_align[0].upper())
@@ -143,14 +140,18 @@ def parse_and_process_args():
     args.ignore_pages = [page - 1 for page in args.ignore_pages]
     args.skip_pages = [page - 1 for page in args.skip_pages]
 
-    return args
+    return args, None
 
 
 def main():
     """
     Command line entrypoint.
     """
-    args = parse_and_process_args()
+    parser = create_parser()
+    args = parser.parse_args()
+    args, error = process_args(args)
+    if error is not None:
+        parser.error(error)
 
     numberer = PdfNumberer(
         first_number=args.first_number,
