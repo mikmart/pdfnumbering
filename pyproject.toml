@@ -1,8 +1,8 @@
 [project]
 name = "pdfnumbering"
+dynamic = ["version"]
 description = "A package and CLI for adding page numbering to PDFs"
 readme = "README.md"
-requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -11,18 +11,30 @@ classifiers = [
 authors = [
     { name = "Mikko Marttila", email = "mikkmart@protonmail.com" },
 ]
+requires-python = ">=3.10"
 dependencies = [
     "fpdf2",
     "pypdf",
 ]
-dynamic = ["version"]
 
 [project.urls]
-"Source" = "https://github.com/mikmart/pdfnumbering"
-"Bug Reports" = "https://github.com/mikmart/pdfnumbering/issues"
+Source = "https://github.com/mikmart/pdfnumbering"
+Issues = "https://github.com/mikmart/pdfnumbering/issues"
+
+[project.optional-dependencies]
+dev = ["pdfnumbering[test, lint]"]
+test = ["pytest"]
+lint = ["pylint"]
 
 [project.scripts]
 pdfnumbering = "pdfnumbering.cli:main"
 
 [tool.setuptools.dynamic]
 version = { attr = "pdfnumbering.__version__" }
+
+[tool.hatch.envs.default]
+dependencies = ["pdfnumbering[dev]"]
+
+[tool.hatch.envs.default.scripts]
+test = "python -m pytest"
+lint = "python -m pylint pdfnumbering"
