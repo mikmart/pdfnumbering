@@ -25,13 +25,25 @@ python -m pip install git+https://github.com/mikmart/pdfnumbering.git
 ```py
 import sys
 
+from fpdf import Align
 from pdfnumbering import PdfNumberer
 from pypdf import PdfWriter
 
 INPUT_FILE = sys.argv[1]
 OUTPUT_FILE = sys.argv[2]
 
-numberer = PdfNumberer()
+numberer = PdfNumberer(
+    first_number=1,
+    ignore_pages=(),
+    skip_pages=(),
+    stamp_format="{} of {}",
+    font_size=24,
+    font_family="Helvetica",
+    text_color=(0x18, 0x18, 0x18),
+    text_align=Align.C,
+    text_position=(0, -1),
+    page_margin=(28, 28),
+)
 document = PdfWriter(clone_from=INPUT_FILE)
 numberer.add_page_numbering(document.pages)
 document.write(OUTPUT_FILE)
